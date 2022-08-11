@@ -78,18 +78,6 @@ jobs:
           python -c "from torch.utils import cpp_extension; print (cpp_extension.CUDA_HOME)"
         shell:
           bash
-      # - name: Install PyTorch Using Conda ${{ matrix.torch-version }}+cu${{ matrix.cuda-version }}
-      #   run: |
-      #     which python
-      #     /opt/conda/bin/python --version
-      #     which python
-      #     conda install -y python=${{ matrix.python-version }} && conda clean -ya
-      #     conda install -y numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses && conda clean -ya
-      #     conda install -y pytorch=${{ matrix.torch-version }} cudatoolkit=${{ matrix.cuda-version }} -c pytorch
-      #     /opt/conda/bin/python --version
-      #     /opt/conda/bin/python -c "import torch; print('PyTorch:', torch.__version__)"
-      #     /opt/conda/bin/python -c "import torch; print('CUDA:', torch.version.cuda)"
-      #     /opt/conda/bin/python -c "from torch.utils import cpp_extension; print (cpp_extension.CUDA_HOME)"
 
       - name: Build wheel
         run: |
@@ -98,5 +86,4 @@ jobs:
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
           export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
           pip install wheel
-          echo ${CUDA_HOME}
-          CUDA_HOME=/usr/local/cuda python setup.py bdist_wheel --dist-dir=dist
+          python setup.py bdist_wheel --dist-dir=dist
