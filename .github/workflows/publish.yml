@@ -48,6 +48,12 @@ jobs:
         run: |
           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
+      - name: Check GPU env
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+          nvcc --version
+
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
         run: |
           pip install numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses
