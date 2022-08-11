@@ -11,7 +11,7 @@ name: Python Package
 on:
   push:
     branches:
-    - test-cotainer
+    - test-workflow
 
 jobs:
   wheel:
