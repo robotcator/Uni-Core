@@ -13,9 +13,6 @@ on:
     branches:
     - test-workflow
 
-permissions:
-  contents: read
-
 jobs:
   wheel:
     runs-on: ${{ matrix.os }}
@@ -38,10 +35,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.8'
+          python-version: ${{ matrix.python-version }}
 
       - name: Set up Linux Env
-          if: ${{ runner.os == 'Linux' }}
           run: |
             bash .github/workflows/env.sh
 
