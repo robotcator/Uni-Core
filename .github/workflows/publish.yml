@@ -48,7 +48,7 @@ jobs:
         run: |
           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
-      - name: Check GPU env
+      - name: Check GPU Env
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
@@ -63,5 +63,6 @@ jobs:
 
       - name: Build wheel
         run: |
+          export TORCH_CUDA_ARCH_LIST "7.0;7.5;8.0"
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
