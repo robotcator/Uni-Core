@@ -59,6 +59,7 @@ jobs:
         run: |
           which python
           python --version
+          source activate
           conda activate 
           which python
           conda install -y python=${{ matrix.python-version }} && conda clean -ya
