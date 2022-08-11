@@ -59,6 +59,8 @@ jobs:
         run: |
           which python
           python --version
+          conda activate 
+          which python
           conda install -y python=${{ matrix.python-version }} && conda clean -ya
           conda install -y numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses && conda clean -ya
           conda install pytorch=${{ matrix.torch-version }} cudatoolkit=${{ matrix.cuda-version }} -c pytorch
