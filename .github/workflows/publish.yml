@@ -31,7 +31,8 @@ jobs:
               cuda-version: 'cu115'
 
     steps:
-      # - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       # - name: Set up Python
       #   uses: actions/setup-python@v3
       #   with:
@@ -62,7 +63,7 @@ jobs:
           which python
           conda install -y python=${{ matrix.python-version }} && conda clean -ya
           conda install -y numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses && conda clean -ya
-          conda install pytorch=${{ matrix.torch-version }} cudatoolkit=${{ matrix.cuda-version }} -c pytorch
+          conda install -y pytorch=${{ matrix.torch-version }} cudatoolkit=${{ matrix.cuda-version }} -c pytorch
           /opt/conda/bin/python --version
           /opt/conda/bin/python -c "import torch; print('PyTorch:', torch.__version__)"
           /opt/conda/bin/python -c "import torch; print('CUDA:', torch.version.cuda)"
