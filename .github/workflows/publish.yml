@@ -89,7 +89,7 @@ jobs:
           python setup.py bdist_wheel --dist-dir=dist
       
       - name: Create Release With Asset
-        id: Test-upload
+        id: Release-AIO
         uses: Hs1r1us/Release-AIO@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
