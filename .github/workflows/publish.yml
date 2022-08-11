@@ -85,6 +85,8 @@ jobs:
 
       - name: Build wheel
         run: |
+          export PATH=/usr/local/nvidia/bin:/usr/local/nvidia/lib64:$PATH
+          export LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
           pip install wheel
           echo ${CUDA_HOME}
           CUDA_HOME=/usr/local/cuda-11.3 python setup.py bdist_wheel --dist-dir=dist
