@@ -23,7 +23,7 @@ jobs:
           os: [ubuntu-20.04]
           python-version: ['3.8']
           torch-version: [1.11.0]
-          cuda-version: ['cu113']
+          cuda-version: ['11.3']
           exclude:
             - torch-version: 1.11.0
               cuda-version: 'cu116'
@@ -46,16 +46,16 @@ jobs:
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
-          bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+          bash .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
       - name: Check GPU Env
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
-          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+          source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           nvcc --version
           conda --version
 
-      - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
+      - name: Install PyTorch ${{ matrix.torch-version }}+cu${{ matrix.cuda-version }}
         run: |
           conda install -y python=${{ matrix.python-version }} && conda clean -ya
           conda install -y numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses && conda clean -ya
