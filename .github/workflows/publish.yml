@@ -87,3 +87,12 @@ jobs:
           export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
+      
+      - name: Create Release With Asset
+        id: Test-upload
+        uses: Hs1r1us/Release-AIO@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          asset_files: './dist'
