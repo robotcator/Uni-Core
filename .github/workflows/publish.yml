@@ -86,4 +86,5 @@ jobs:
       - name: Build wheel
         run: |
           pip install wheel
-          CUDA_HOME=/usr/local/cuda-${{ matrix.cuda-version }} python setup.py bdist_wheel --dist-dir=dist
+          echo $P{CUDA_HOME}
+          CUDA_HOME=/usr/local/cuda-11.3 python setup.py bdist_wheel --dist-dir=dist
