@@ -11,7 +11,7 @@ name: Python Package
 on:
   push:
     branches:
-    - test-workflow
+    - test-cotainer
 
 jobs:
   wheel:
@@ -60,6 +60,7 @@ jobs:
           source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           nvcc --version
           conda --version
+          which conda 
         shell:
           bash
 
@@ -92,9 +93,10 @@ jobs:
 
       - name: Build wheel
         run: |
+          export FORCE_CUDA="1"
           export PATH=/usr/local/nvidia/bin:/usr/local/nvidia/lib64:$PATH
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
           export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
           pip install wheel
           echo ${CUDA_HOME}
-          CUDA_HOME=/usr/local/cuda-11.3 python setup.py bdist_wheel --dist-dir=dist
+          CUDA_HOME=/usr/local/cuda python setup.py bdist_wheel --dist-dir=dist
