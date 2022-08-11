@@ -68,7 +68,7 @@ jobs:
           python --version
           python -c "import torch; print('PyTorch:', torch.__version__)"
           python -c "import torch; print('CUDA:', torch.version.cuda)"
-          python -c
+          python -c "from torch.utils import cpp_extension; print (cpp_extension.CUDA_HOME)"
 
       # - name: Install PyTorch Using Conda ${{ matrix.torch-version }}+cu${{ matrix.cuda-version }}
       #   run: |
