@@ -44,11 +44,15 @@ jobs:
         run: |
           sudo rm -rf /usr/share/dotnet
           bash .github/workflows/env.sh
+        shell:
+          bash
 
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           bash .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}.sh
+        shell:
+          bash
 
       - name: Check GPU Env
         if: ${{ matrix.cuda-version != 'cpu' }}
