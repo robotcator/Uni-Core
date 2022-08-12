@@ -123,7 +123,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test
-        run: echo ${{ github.sha }} > ${{ matrix.cuda-version }}.txt
+        run: |
+          echo ${{ github.sha }} > ${{ matrix.cuda-version }}.txt
+          cat ${{ matrix.cuda-version }}.txt
 
       # - name: Create Release
       #   id: create_release
