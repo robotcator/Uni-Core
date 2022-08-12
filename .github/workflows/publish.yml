@@ -59,19 +59,13 @@ jobs:
         run: |
           source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           nvcc --version
-          conda --version
-          which conda 
         shell:
           bash
 
       - name: Install PyTorch ${{ matrix.torch-version }}+cu${{ matrix.cuda-version }}
         run: |
-          which python
-          python --version
-          which python
-          
           pip install numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses && conda clean -ya
-          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/cu${{ matrix.cuda-version }}/torch_stable.html
+          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version }} -f https://download.pytorch.org/whl/cu${{ matrix.cuda-version }}/torch_stable.html
           python --version
           python -c "import torch; print('PyTorch:', torch.__version__)"
           python -c "import torch; print('CUDA:', torch.version.cuda)"
@@ -87,6 +81,12 @@ jobs:
           export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
+
+      - name: Create Relase Tag
+        id: create-tag
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
       
       - name: Create Release With Asset
         id: Release-AIO
@@ -94,5 +94,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1-test
+          tag_name: ${{ steps.create_tag.outputs.version }}
           asset_files: './dist'
