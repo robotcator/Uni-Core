@@ -85,7 +85,9 @@ jobs:
       - name: 'Check tag exists'
         id: tagged
         shell: bash
-        run: git show-ref --tags --verify --quiet -- "refs/tags/python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}" && echo "::set-output name=tagged::0" || echo "::set-output name=tagged::1"
+        run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git show-ref --tags --verify --quiet -- "refs/tags/python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}" && echo "::set-output name=tagged::0" || echo "::set-output name=tagged::1"
 
       - name: Create Relase Tag
         if: steps.tagged.outputs.tagged == 1
