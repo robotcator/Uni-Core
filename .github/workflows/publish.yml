@@ -124,8 +124,7 @@ jobs:
 
       - name: Test
         run: |
-          echo ${{ github.sha }} > ${{ matrix.cuda-version }}.txt
-          cat ${{ matrix.cuda-version }}.txt
+          echo ${{ github.sha }} > python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.txt
 
       # - name: Create Release
       #   id: create_release
@@ -144,9 +143,9 @@ jobs:
         with:
           # upload_url: ${{ needs.create_release.outputs.upload_url }} 
           upload_url: ${{ steps.get_current_release.outputs.upload_url }}
-          asset_path: ./${{ matrix.cuda-version }}.txt
-          asset_name: ${{ matrix.cuda-version }}.txt
-          asset_content_type: application/plain.txt
+          asset_path: ./python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.txt
+          asset_name: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.txt
+          asset_content_type: application/*
 
 
       # - name: 'Check Release exists'
