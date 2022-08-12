@@ -87,14 +87,12 @@ jobs:
         uses: rickstaa/action-create-tag@v1
         with:
           tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
-        run:
-          echo ::set-output name=tag::python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
-      
+            
       - name: Create Release With Asset
         id: Release-AIO
         uses: Hs1r1us/Release-AIO@v1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.create_tag.outputs.tag }}
+          tag_name: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
           asset_files: './'
