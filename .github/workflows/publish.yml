@@ -44,7 +44,7 @@ jobs:
       
   wheel:
     runs-on: ${{ matrix.os }}
-    needs: create_release
+    needs: release
     
     strategy:
       fail-fast: false
