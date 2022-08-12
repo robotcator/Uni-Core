@@ -57,9 +57,9 @@ jobs:
           cuda-version: ['113', '116']
           exclude:
             - torch-version: 1.11.0
-              cuda-version: 'cu116'
+              cuda-version: '116'
             - torch-version: 1.12.0
-              cuda-version: 'cu115'
+              cuda-version: '115'
 
     steps:
       - name: Checkout
