@@ -28,6 +28,10 @@ jobs:
     #   uses: rickstaa/action-create-tag@v1
     #   with:
     #     tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Create Release
         id: create_release
