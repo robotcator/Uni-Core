@@ -124,7 +124,9 @@ jobs:
 
       - name: Test
         run: |
-          echo ${{ github.sha }} > python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.txt
+          mkdir dist
+          echo ${{ github.sha }} > ./dist/1.whl
+          ls dist/*whl |xargs -I {} mv {} unicore-stable-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
 
       # - name: Create Release
       #   id: create_release
@@ -142,9 +144,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # upload_url: ${{ needs.create_release.outputs.upload_url }} 
+          # check here why didn't works
           upload_url: ${{ steps.get_current_release.outputs.upload_url }}
-          asset_path: ./python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.txt
-          asset_name: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.txt
+          asset_path: ./unicore-stable-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          asset_name: unicore-stable-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
           asset_content_type: application/*
 
 
