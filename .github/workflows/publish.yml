@@ -95,8 +95,15 @@ jobs:
         uses: rickstaa/action-create-tag@v1
         with:
           tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
-            
+      
+      - name: 'Check Release exists'
+        id: release
+        uses: phish108/release-check@1.0.11-main.3
+        with: 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release With Asset
+        if: ${{ steps.release.outputs.proceed }} == false
         id: Release-AIO
         uses: Hs1r1us/Release-AIO@v1.0
         env:
