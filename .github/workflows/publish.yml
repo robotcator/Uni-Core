@@ -15,19 +15,6 @@ on:
 
 jobs:
   release:
-    # - name: 'Check tag exists'
-    #   id: tagged
-    #   shell: bash
-    #   run: |
-    #     git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-    #     git show-ref --tags --verify --quiet -- "refs/tags/python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}" && echo "::set-output name=tagged::0" || echo "::set-output name=tagged::1"
-
-    # - name: Create Relase Tag
-    #   if: steps.tagged.outputs.tagged == 1
-    #   id: create-tag
-    #   uses: rickstaa/action-create-tag@v1
-    #   with:
-    #     tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
@@ -41,6 +28,21 @@ jobs:
         with:
           tag_name: v1-test
           release_name: Release v1-test
+
+    # - name: 'Check tag exists'
+    #   id: tagged
+    #   shell: bash
+    #   run: |
+    #     git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+    #     git show-ref --tags --verify --quiet -- "refs/tags/python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}" && echo "::set-output name=tagged::0" || echo "::set-output name=tagged::1"
+
+    # - name: Create Relase Tag
+    #   if: steps.tagged.outputs.tagged == 1
+    #   id: create-tag
+    #   uses: rickstaa/action-create-tag@v1
+    #   with:
+    #     tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
+
       
   wheel:
     runs-on: ${{ matrix.os }}
@@ -112,13 +114,13 @@ jobs:
       #     pip install wheel
       #     python setup.py bdist_wheel --dist-dir=dist
 
-      # - name: Get Release with tag
-      #   id: get_current_release
-      #   uses: joutvhu/get-release@v1
-      #   with:
-      #     tag_name: v1.0.0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Release with tag
+        id: get_current_release
+        uses: joutvhu/get-release@v1
+        with:
+          tag_name: v1-test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Create Release
       #   id: create_release
@@ -135,7 +137,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }} 
+          # upload_url: ${{ needs.create_release.outputs.upload_url }} 
+          upload_url: ${{ steps.get_current_release.outputs.upload_url }}
           asset_path: ./
           asset_name: setup.py
           asset_content_type: application/zip
