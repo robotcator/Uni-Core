@@ -14,6 +14,30 @@ on:
     - test-upload
 
 jobs:
+  release:
+    # - name: 'Check tag exists'
+    #   id: tagged
+    #   shell: bash
+    #   run: |
+    #     git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+    #     git show-ref --tags --verify --quiet -- "refs/tags/python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}" && echo "::set-output name=tagged::0" || echo "::set-output name=tagged::1"
+
+    # - name: Create Relase Tag
+    #   if: steps.tagged.outputs.tagged == 1
+    #   id: create-tag
+    #   uses: rickstaa/action-create-tag@v1
+    #   with:
+    #     tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: v1-test
+        release_name: Release v1-test
+      
   wheel:
     runs-on: ${{ matrix.os }}
     
@@ -82,28 +106,22 @@ jobs:
       #     pip install wheel
       #     python setup.py bdist_wheel --dist-dir=dist
 
-      # - name: 'Check tag exists'
-      #   id: tagged
-      #   shell: bash
-      #   run: |
-      #     git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-      #     git show-ref --tags --verify --quiet -- "refs/tags/python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}" && echo "::set-output name=tagged::0" || echo "::set-output name=tagged::1"
-
-      # - name: Create Relase Tag
-      #   if: steps.tagged.outputs.tagged == 1
-      #   id: create-tag
-      #   uses: rickstaa/action-create-tag@v1
-      #   with:
-      #     tag: python-${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}
-      
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: Get Release with tag
+        id: get_current_release
+        uses: joutvhu/get-release@v1
         with:
-          tag_name: v1-test
-          release_name: Release v1-test
+          tag_name: v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      #   with:
+      #     tag_name: v1-test
+      #     release_name: Release v1-test
       
       - name: Upload Release Asset
         id: upload_release_asset 
@@ -111,7 +129,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          upload_url: ${{ steps.get_current_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./
           asset_name: setup.py
           asset_content_type: application/zip
