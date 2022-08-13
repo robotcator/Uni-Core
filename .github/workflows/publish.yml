@@ -67,7 +67,7 @@ jobs:
           os: [ubuntu-20.04]
           # python-version: ['3.7', '3.8']
           python-version: ['3.7']
-          torch-version: [1.11.0, 1.12.0]
+          torch-version: [1.11.0, 1.12.0, 1.12.1]
           # cuda-version: ['102', '113', '116']
           cuda-version: ['113']
           exclude:
