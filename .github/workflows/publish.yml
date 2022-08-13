@@ -145,7 +145,7 @@ jobs:
           tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
           wheel_name=$(ls dist/* | sed "s/-/+$tmpname-/2")
           ls dist/*whl |xargs -I {} mv {} ${wheel_name}
-          echo ${wheel_name} >> $GITHUB_ENV
+          echo "wheel_name=${wheel_name}" >> $GITHUB_ENV
         shell: 
           bash
 
