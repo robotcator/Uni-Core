@@ -141,7 +141,7 @@ jobs:
       - name: Test
         run: |
           mkdir dist
-          echo ${{ github.sha }} > ./dist/1.whl
+          echo ${{ github.sha }} > ./dist/unicore-0.0.1a0-linux_x86_64.whl 
           tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
           wheel_name=$(ls dist/* | sed "s/-/+$tmpname-/2")
           ls dist/*whl |xargs -I {} mv {} ${wheel_name}
@@ -157,7 +157,7 @@ jobs:
       #     pip install wheel
       #     python setup.py bdist_wheel --dist-dir=dist
       #     tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
-      #     wheel_name=$(ls dist/unicore-0.0.1a0-cp37-cp37m-linux_x86_64.whl | sed "s/-/+$tmpname-/2")
+      #     wheel_name=$(ls dist/* | sed "s/-/+$tmpname-/2")
       #     ls dist/*whl |xargs -I {} mv {} ${wheel_name}
       
 
