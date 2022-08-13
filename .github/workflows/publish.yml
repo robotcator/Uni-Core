@@ -9,7 +9,7 @@
 name: Python Package
 
 on:
-  push:
+  # push:
     # branches:
     #   - test-ontag
     # tags:
