@@ -23,9 +23,14 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - name: Extract branch name
+      # - name: Extract branch name
+      #   id: extract_branch
+      #   run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      #   shell: bash
+
+      - name: Get the tag version
         id: extract_branch
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
         shell: bash
 
       - name: Create Release
@@ -124,14 +129,14 @@ jobs:
       #     python setup.py bdist_wheel --dist-dir=dist
       #     ls dist/*whl |xargs -I {} mv {} unicore-${GITHUB_REF##*/}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
       
-      - name: Extract branch name
-        id: extract_branch
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        shell: bash
+      # - name: Extract branch name
+      #   id: extract_branch
+      #   run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      #   shell: bash
       
-      # - name: Get the tag version
-      #   id: get_tag_version
-      #   run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      - name: Get the tag version
+        id: extract_branch
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: Get Release with tag
         id: get_current_release
