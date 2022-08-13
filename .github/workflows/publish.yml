@@ -11,9 +11,12 @@ name: Python Package
 on:
   push:
     branches:
-    - test-ontag
+      - test-ontag
     tags:
-    - '**'
+      - '**'
+  create:
+    tags:
+      - '**'
 
 jobs:
   release:
@@ -85,12 +88,12 @@ jobs:
         shell:
           bash
 
-      - name: Install CUDA ${{ matrix.cuda-version }}
-        if: ${{ matrix.cuda-version != 'cpu' }}
-        run: |
-          bash .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}.sh
-        shell:
-          bash
+      # - name: Install CUDA ${{ matrix.cuda-version }}
+      #   if: ${{ matrix.cuda-version != 'cpu' }}
+      #   run: |
+      #     bash .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}.sh
+      #   shell:
+      #     bash
 
       # - name: Check GPU Env
       #   if: ${{ matrix.cuda-version != 'cpu' }}
@@ -125,6 +128,10 @@ jobs:
         id: extract_branch
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         shell: bash
+      
+      # - name: Get the tag version
+      #   id: get_tag_version
+      #   run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: Get Release with tag
         id: get_current_release
