@@ -143,7 +143,7 @@ jobs:
           mkdir dist
           echo ${{ github.sha }} > ./dist/unicore-0.0.1a0-linux_x86_64.whl 
           tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
-          wheel_name=$(ls dist/* | sed "s/-/+$tmpname-/2")
+          wheel_name=$(ls dist/*whl | sed "s/-/+$tmpname-/2")
           ls dist/*whl |xargs -I {} mv {} ${wheel_name}
           echo "wheel_name=${wheel_name}" >> $GITHUB_ENV
         shell: 
@@ -158,7 +158,7 @@ jobs:
       #     pip install wheel
       #     python setup.py bdist_wheel --dist-dir=dist
       #     tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
-      #     wheel_name=$(ls dist/* | sed "s/-/+$tmpname-/2")
+      #     wheel_name=$(ls dist/*whl | sed "s/-/+$tmpname-/2")
       #     ls dist/*whl |xargs -I {} mv {} ${wheel_name}
       
 
