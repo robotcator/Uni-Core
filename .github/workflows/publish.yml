@@ -183,7 +183,7 @@ jobs:
           # asset_path: ./unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
           # asset_name: unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
           asset_path: ./
-          asset_name: ${{wheel_name}}
+          asset_name: ${{env.wheel_name}}
           asset_content_type: application/*
 
 
