@@ -85,41 +85,41 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set up Linux Env
-        if: ${{ runner.os == 'Linux' }}
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          bash .github/workflows/env.sh
-          echo ${{ needs.create_release.outputs.upload_url }} 
-          echo ${{ needs.steps.extract_branch.outputs.upload_url }} 
-        shell:
-          bash
+      # - name: Set up Linux Env
+      #   if: ${{ runner.os == 'Linux' }}
+      #   run: |
+      #     sudo rm -rf /usr/share/dotnet
+      #     bash .github/workflows/env.sh
+      #     echo ${{ needs.create_release.outputs.upload_url }} 
+      #     echo ${{ needs.steps.extract_branch.outputs.upload_url }} 
+      #   shell:
+      #     bash
 
-      - name: Install CUDA ${{ matrix.cuda-version }}
-        if: ${{ matrix.cuda-version != 'cpu' }}
-        run: |
-          bash .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}.sh
-        shell:
-          bash
+      # - name: Install CUDA ${{ matrix.cuda-version }}
+      #   if: ${{ matrix.cuda-version != 'cpu' }}
+      #   run: |
+      #     bash .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}.sh
+      #   shell:
+      #     bash
 
-      - name: Check GPU Env
-        if: ${{ matrix.cuda-version != 'cpu' }}
-        run: |
-          source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          nvcc --version
-        shell:
-          bash
+      # - name: Check GPU Env
+      #   if: ${{ matrix.cuda-version != 'cpu' }}
+      #   run: |
+      #     source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+      #     nvcc --version
+      #   shell:
+      #     bash
 
-      - name: Install PyTorch ${{ matrix.torch-version }}+cu${{ matrix.cuda-version }}
-        run: |
-          pip install numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses && conda clean -ya
-          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version }} -f https://download.pytorch.org/whl/cu${{ matrix.cuda-version }}/torch_stable.html
-          python --version
-          python -c "import torch; print('PyTorch:', torch.__version__)"
-          python -c "import torch; print('CUDA:', torch.version.cuda)"
-          python -c "from torch.utils import cpp_extension; print (cpp_extension.CUDA_HOME)"
-        shell:
-          bash
+      # - name: Install PyTorch ${{ matrix.torch-version }}+cu${{ matrix.cuda-version }}
+      #   run: |
+      #     pip install numpy pyyaml scipy ipython mkl mkl-include ninja cython typing pandas typing-extensions dataclasses && conda clean -ya
+      #     pip install --no-index --no-cache-dir torch==${{ matrix.torch-version }} -f https://download.pytorch.org/whl/cu${{ matrix.cuda-version }}/torch_stable.html
+      #     python --version
+      #     python -c "import torch; print('PyTorch:', torch.__version__)"
+      #     python -c "import torch; print('CUDA:', torch.version.cuda)"
+      #     python -c "from torch.utils import cpp_extension; print (cpp_extension.CUDA_HOME)"
+      #   shell:
+      #     bash
 
       # - name: Extract branch name
       #   id: extract_branch
@@ -138,23 +138,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Test
-      #   run: |
-      #     mkdir dist
-      #     echo ${{ github.sha }} > ./dist/1.whl
-      #     ls dist/*whl |xargs -I {} mv {} unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
-      #   shell: 
-      #     bash
-
-      - name: Build wheel
+      - name: Test
         run: |
-          export FORCE_CUDA="1"
-          export PATH=/usr/local/nvidia/bin:/usr/local/nvidia/lib64:$PATH
-          export LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-          export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
-          pip install wheel
-          python setup.py bdist_wheel --dist-dir=dist
-          ls dist/*whl |xargs -I {} mv {} unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          mkdir dist
+          echo ${{ github.sha }} > ./dist/1.whl
+          tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
+          wheel_name=$(ls dist/unicore-0.0.1a0-cp37-cp37m-linux_x86_64.whl | sed "s/-/+$tmpname-/2")
+          ls dist/*whl |xargs -I {} mv {} ${wheel_name}
+        shell: 
+          bash
+
+      # - name: Build wheel
+      #   run: |
+      #     export FORCE_CUDA="1"
+      #     export PATH=/usr/local/nvidia/bin:/usr/local/nvidia/lib64:$PATH
+      #     export LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+      #     export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
+      #     pip install wheel
+      #     python setup.py bdist_wheel --dist-dir=dist
+      #     tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
+      #     wheel_name=$(ls dist/unicore-0.0.1a0-cp37-cp37m-linux_x86_64.whl | sed "s/-/+$tmpname-/2")
+      #     ls dist/*whl |xargs -I {} mv {} ${wheel_name}
       
 
       # - name: Create Release
@@ -175,8 +179,10 @@ jobs:
           # upload_url: ${{ needs.create_release.outputs.upload_url }} 
           # check here why didn't works
           upload_url: ${{ steps.get_current_release.outputs.upload_url }}
-          asset_path: ./unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
-          asset_name: unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          # asset_path: ./unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          # asset_name: unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          asset_path: ./${wheel_name}
+          asset_name: ${wheel_name}
           asset_content_type: application/*
 
 
