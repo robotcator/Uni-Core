@@ -153,8 +153,8 @@ jobs:
           # upload_url: ${{ needs.create_release.outputs.upload_url }} 
           # check here why didn't works
           upload_url: ${{ steps.get_current_release.outputs.upload_url }}
-          asset_path: ./unicore-${GITHUB_REF##*/}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
-          asset_name: unicore-${GITHUB_REF##*/}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          asset_path: ./unicore-${{ need.steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          asset_name: unicore-${{ need.steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
           asset_content_type: application/*
 
 
