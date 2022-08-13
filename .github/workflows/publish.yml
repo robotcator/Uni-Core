@@ -19,17 +19,20 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        shell: bash
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${GITHUB_REF##*/}
-          release_name: ${GITHUB_REF##*/}
+          tag_name: ${{ steps.extract_branch.outputs.branch }}
+          release_name: ${{ steps.extract_branch.outputs.branch }}
 
     # - name: 'Check tag exists'
     #   id: tagged
@@ -115,14 +118,14 @@ jobs:
           export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
-          ls dist/*whl |xargs -I {} mv {} unicore-${{ github.ref }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          ls dist/*whl |xargs -I {} mv {} unicore-${GITHUB_REF##*/}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
 
 
       - name: Get Release with tag
         id: get_current_release
         uses: joutvhu/get-release@v1
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ need.steps.extract_branch.outputs.branch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -150,8 +153,8 @@ jobs:
           # upload_url: ${{ needs.create_release.outputs.upload_url }} 
           # check here why didn't works
           upload_url: ${{ steps.get_current_release.outputs.upload_url }}
-          asset_path: ./unicore-${{ github.ref }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
-          asset_name: unicore-${{ github.ref }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          asset_path: ./unicore-${GITHUB_REF##*/}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          asset_name: unicore-${GITHUB_REF##*/}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
           asset_content_type: application/*
 
 
