@@ -10,10 +10,10 @@ name: Python Package
 
 on:
   push:
-    branches:
-      - test-ontag
-    tags:
-      - '**'
+    # branches:
+    #   - test-ontag
+    # tags:
+    #   - '**'
   create:
     tags:
       - '**'
@@ -145,7 +145,7 @@ jobs:
         run: |
           mkdir dist
           echo ${{ github.sha }} > ./dist/1.whl
-          ls dist/*whl |xargs -I {} mv {} unicore-${GITHUB_REF##*/}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
+          ls dist/*whl |xargs -I {} mv {} unicore-${{ steps.extract_branch.outputs.branch }}-py${{ matrix.python-version }}-cu${{ matrix.cuda-version }}-torch${{ matrix.torch-version }}.whl
 
       # - name: Create Release
       #   id: create_release
