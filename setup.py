@@ -72,7 +72,9 @@ print("\n\ntorch.__version__  = {}\n\n".format(torch.__version__))
 TORCH_MAJOR = int(torch.__version__.split('.')[0])
 TORCH_MINOR = int(torch.__version__.split('.')[1])
 
-if not (TORCH_MAJOR >= 1 and TORCH_MINOR >= 4):
+if not ( (TORCH_MAJOR >= 1 and TORCH_MINOR >= 4)
+        or (TORCH_MAJOR > 1)
+    ):
       raise RuntimeError("Requires Pytorch 1.4 or newer.\n" +
                          "The latest stable release can be obtained from https://pytorch.org/")
 

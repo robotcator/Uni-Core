@@ -58,6 +58,8 @@ jobs:
               cuda-version: '118'
             - torch-version: 1.13.1
               cuda-version: '113'
+            - torch-version: 1.13.1
+              cuda-version: '118'
             - torch-version: 2.0.0
               python-version: '3.7'
             - torch-version: 2.0.0
@@ -125,9 +127,6 @@ jobs:
       - name: Build wheel
         run: |
           export FORCE_CUDA="1"
-          export PATH=/usr/local/nvidia/bin:/usr/local/nvidia/lib64:$PATH
-          export LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-          export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
           source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           echo 'path' $PATH
           echo 'lib path' $LD_LIBRARY_PATH
