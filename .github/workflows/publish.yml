@@ -131,7 +131,7 @@ jobs:
           source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           echo 'path' $PATH
           echo 'lib path' $LD_LIBRARY_PATH
-          ls /usr/local/cuda-11.7/include | grep cuda_profiler_api.h
+          ls /usr/local/cuda-11.7/include
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
           tmpname=cu${{ matrix.cuda-version }}torch${{ matrix.torch-version }}
