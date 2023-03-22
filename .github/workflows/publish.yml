@@ -124,11 +124,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: false
+
       - name: Build wheel
         run: |
           export FORCE_CUDA="1"
           source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          ls /usr/local/cuda-11.7/include | grep 'cuda_profiler_api.h'
           echo 'path' $PATH
           echo 'lib path' $LD_LIBRARY_PATH
           pip install wheel
