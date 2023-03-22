@@ -128,6 +128,7 @@ jobs:
           export PATH=/usr/local/nvidia/bin:/usr/local/nvidia/lib64:$PATH
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
           export CUDA_INSTALL_DIR=/usr/local/cuda-11.3$CUDA_INSTALL_DIR
+          source .github/workflows/cuda/cu${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           echo 'path' $PATH
           echo 'lib path' $LD_LIBRARY_PATH
           pip install wheel
