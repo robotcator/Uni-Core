@@ -187,6 +187,7 @@ def train(
         if epoch_itr.epoch <= len(args.update_freq)
         else args.update_freq[-1]
     )
+    # itr = iterators.GroupedIterator([[item] for item in range(9163)], update_freq)
     itr = iterators.GroupedIterator(itr, update_freq)
     progress = progress_bar.progress_bar(
         itr,
@@ -209,30 +210,59 @@ def train(
     logger.info("Start iterating over samples")
     max_update = args.max_update or math.inf
 
-    for i, samples in enumerate(progress):
-        with metrics.aggregate("train_inner"), torch.autograd.profiler.record_function(
-            "train_step-%d" % i
-        ):
-            log_output = trainer.train_step(samples)
+    # import pdb; pdb.set_trace()
+    # import pickle
+    # samples = pickle.load(open("{0}.data".format(args.batch_size), "rb"))
+    with torch.profiler.profile(
+        activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA],
+        schedule=torch.profiler.schedule(
+            skip_first=200, # tells profiler that it should ignore the first 10 steps
+            wait=5,  	# dling (wait=5 steps), during this phase profiler is not active;
+            warmup=1,
+            active=2,
+            repeat=1
+        ),
+        record_shapes=False,
+        profile_memory=False,  # This will take 1 to 2 minutes. Setting it to False could greatly speedup.
+        with_stack=False,
+        with_modules=False,
+        on_trace_ready=torch.profiler.tensorboard_trace_handler(
+            './debug_v2/result_{0}'.format(args.batch_size), 
+            worker_name='worker0'),
+    ) as prof:
+        # for i, item in enumerate(progress):
+        for i, samples in enumerate(progress):
+            with metrics.aggregate("train_inner"), torch.autograd.profiler.record_function(
+                "train_step-%d" % i
+            ):
+                log_output = trainer.train_step(samples)
 
-        if log_output is not None:  # not OOM, overflow, ...
-            # log mid-epoch stats
-            num_updates = trainer.get_num_updates()
-            if num_updates % args.log_interval == 0:
-                stats = get_training_stats(metrics.get_smoothed_values("train_inner"))
-                progress.log(stats, tag="train_inner", step=num_updates)
+            if args.profile:
+                # import pdb; pdb.set_trace()
+                # import pickle; pickle.dump(samples, open("{0}.data".format(args.batch_size), "wb"))
+                prof.step()
+                if i > 230:
+                    exit()
 
-                # reset mid-epoch stats after each log interval
-                # the end-of-epoch stats will still be preserved
-                metrics.reset_meters("train_inner")
+            if log_output is not None:  # not OOM, overflow, ...
+                # log mid-epoch stats
+                num_updates = trainer.get_num_updates()
+                if num_updates % args.log_interval == 0:
+                    stats = get_training_stats(metrics.get_smoothed_values("train_inner"))
+                    progress.log(stats, tag="train_inner", step=num_updates)
 
-        end_of_epoch = not itr.has_next()
-        valid_losses, should_stop = validate_and_save(
-            args, trainer, task, epoch_itr, valid_subsets, end_of_epoch, ckp_copy_thread
-        )
+                    # reset mid-epoch stats after each log interval
+                    # the end-of-epoch stats will still be preserved
+                    metrics.reset_meters("train_inner")
 
-        if should_stop:
-            break
+            if not args.profile:
+                end_of_epoch = not itr.has_next()
+                valid_losses, should_stop = validate_and_save(
+                    args, trainer, task, epoch_itr, valid_subsets, end_of_epoch, ckp_copy_thread
+                )
+
+            if should_stop:
+                break
 
     # log end-of-epoch stats
     logger.info("end of epoch {} (average epoch stats below)".format(epoch_itr.epoch))
@@ -397,9 +427,28 @@ def cli_main(
     parser = options.get_training_parser()
     args = options.parse_args_and_arch(parser, modify_parser=modify_parser)
     if args.profile:
-        with torch.cuda.profiler.profile():
-            with torch.autograd.profiler.emit_nvtx():
-                distributed_utils.call_main(args, main)
+        print ("args...", args)
+        # with torch.cuda.profiler.profile():
+        #     with torch.autograd.profiler.emit_nvtx():
+        #         distributed_utils.call_main(args, main)
+        # with torch.autograd.profiler.profile(use_cuda=True) as prof:
+
+        # with torch.profiler.profile(
+        #     activities=[
+        #         torch.profiler.ProfilerActivity.CPU,
+        #         torch.profiler.ProfilerActivity.CUDA],
+        #     # schedule=torch.profiler.schedule(
+        #     #     wait=1,
+        #     #     warmup=1,
+        #     #     active=2),
+        #     on_trace_ready=torch.profiler.tensorboard_trace_handler('./trace/result_{0}'.format(args.batch_size), worker_name='worker0'),
+        #     record_shapes=False,
+        #     profile_memory=False,  # This will take 1 to 2 minutes. Setting it to False could greatly speedup.
+        #     with_stack=False
+        # ) as prof:
+        #     distributed_utils.call_main(args, main)
+
+        distributed_utils.call_main(args, main)
     else:
         distributed_utils.call_main(args, main)
 
