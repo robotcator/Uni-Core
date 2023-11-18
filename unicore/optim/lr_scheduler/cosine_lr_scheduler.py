@@ -84,6 +84,8 @@ class CosineLRSchedule(UnicoreLRScheduler):
                             help='initial learning rate during warmup phase; default is args.lr')
         parser.add_argument('--max-lr', type=float, metavar='LR',
                             help='max learning rate, must be more than args.lr')
+        parser.add_argument('--min-lr', default=0.0, type=float, metavar='LR',
+                            help='min learning rate')
         parser.add_argument('--t-mult', default=1, type=float, metavar='LR',
                             help='factor to grow the length of each period')
         parser.add_argument('--lr-period-updates', default=-1, type=float, metavar='LR',
